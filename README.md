@@ -4,7 +4,7 @@ Requires prior basic knowledge about _Tract-Based Spatial Statistics_.
 
 See [this post](http://xgrg.github.io/parallelize-TBSS/) for a few explanations on why and how.
 
-# Example
+## Example
 
 ```python
 from tbss import contrasts
@@ -17,11 +17,11 @@ commands = contrasts.randomise_parallel(in_file = '/path/to/all_FA_skeletonised.
                n_cpus = 6,
                email_notify = None,
                sleep_interval = 120)
-commands
 ```
 
 ```
 Temporary contrast files: ['/path/to/tbss_FA_part0.con', '/path/to/tbss_FA_part1.con', '/path/to/tbss_FA_part2.con', '/path/to/tbss_FA_part3.con', '/path/to/tbss_FA_part4.con', '/path/to/tbss_FA_part5.con']
+
 [u'sleep 0 ; randomise -i /path/to/all_FA_skeletonised.nii.gz -d /path/to/design.mat -t /path/to/tbss_FA_part0.con -m /path/to/mean_FA_skeleton_mask.nii.gz -n 1000 -R --T2 -o /path/to/tbss_FA --skipTo=1 -V &> /tmp/tmpHj9gPW.log',
 u'sleep 120 ; randomise -i /path/to/all_FA_skeletonised.nii.gz -d /path/to/design.mat -t /path/to/tbss_FA_part1.con -m /path/to/mean_FA_skeleton_mask.nii.gz -n 1000 -R --T2 -o /path/to/tbss_FA --skipTo=2 -V &> /tmp/tmpDP2rM9.log',
 u'sleep 240 ; randomise -i /path/to/all_FA_skeletonised.nii.gz -d /path/to/design.mat -t /path/to/tbss_FA_part2.con -m /path/to/mean_FA_skeleton_mask.nii.gz -n 1000 -R --T2 -o /path/to/tbss_FA --skipTo=3 -V &> /tmp/tmp5u74y0.log',
