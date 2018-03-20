@@ -1,3 +1,6 @@
+from matplotlib import pyplot as plt
+plt.rcParams.update({'figure.max_open_warning': 0})
+
 def plot_stat_map(img, mean_FA_skeleton, start, end, row_l=6, step=1, title='',
     axis='z', pngfile=None, threshold=0.95):
     ''' Inspired from plot_two_maps. Plots a TBSS contrast map over the
