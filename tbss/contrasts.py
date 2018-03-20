@@ -106,9 +106,6 @@ def randomise_parallel(in_file, out_basename, design_mat, mask, tcon,
         cmd = cmd + ' &> %s'%tmpfile
         commands.append(cmd)
 
-    if not sleep_interval is None and sleep_interval > 0:
-        commands = ['sleep %s ; %s'%(str(i*sleep_interval), e) \
-                for i, e in enumerate(commands)]
 
     if not email_notify is None:
         notif_commands = []
@@ -119,5 +116,9 @@ def randomise_parallel(in_file, out_basename, design_mat, mask, tcon,
                     for e in commands]
             notif_commands.append(cmd)
         commands = notif_commands
+
+    if not sleep_interval is None and sleep_interval > 0:
+        commands = ['sleep %s ; %s'%(str(i*sleep_interval), e) \
+                for i, e in enumerate(commands)]
 
     return commands
