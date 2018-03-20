@@ -102,7 +102,8 @@ def randomise_parallel(in_file, out_basename, design_mat, mask, tcon,
         tmpfile = tempfile.mkstemp(suffix='.log')[1]
 
         cmd = rand.cmdline.replace('-o "tbss_"',
-                '-o %s --skipTo=%s -V &> %s'%(out_basename, skipTo, tmpfile))
+                '-o %s --skipTo=%s -V'%(out_basename, skipTo))
+        cmd = cmd + ' &> %s'%tmpfile
         commands.append(cmd)
 
     if not sleep_interval is None and sleep_interval > 0:
