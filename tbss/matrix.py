@@ -16,3 +16,14 @@ def dump(df, fp):
     s = '\n'.join(mat)
     with open(fp, 'w') as w:
         w.write(s)
+
+def read(fp):
+    ''' Read a matrix from a TBSS .mat file.'''
+
+    import logging as log
+    lines = open(fp).read().split('\n')
+    lines = [line for line in lines if not line.startswith('/')]
+    mat = []
+    for line in lines:
+        mat.append(line.split(' '))
+    return mat
