@@ -87,13 +87,13 @@ def randomise_parallel(in_file, out_basename, design_mat, mask, tcon,
 
     contrasts = read(tcon)
     fp = ['/tmp/%s_part%s.con'%(op.basename(out_basename), str(s)) \
-            for s in xrange(n_cpus)]
+            for s in xrange(min(n_cpus, len(contrasts)))]
 
     log.info('Temporary contrast files: %s'%str(fp))
     dump(contrasts, fp)
 
     commands = []
-    for i in xrange(n_cpus):
+    for i in xrange(min(n_cpus, len(contrasts))):
         rand = fsl.Randomise(in_file=in_file, mask=mask, tcon=fp[i],
             design_mat=design_mat, demean=demean, num_perm=num_perm,
             raw_stats_imgs=True, tfce2D=True)
