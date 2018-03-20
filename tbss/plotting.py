@@ -1,5 +1,5 @@
 def plot_stat_map(img, mean_FA_skeleton, start, end, row_l=6, step=1, title='',
-    axis='z', pngfile=None):
+    axis='z', pngfile=None, threshold=0.95):
     ''' Inspired from plot_two_maps. Plots a TBSS contrast map over the
     skeleton of a mean FA map'''
 
@@ -39,7 +39,8 @@ def plot_stat_map(img, mean_FA_skeleton, start, end, row_l=6, step=1, title='',
 
         try:
             # Add overlay
-            t.add_overlay(dil_tbss_img, cmap=cm.hot, threshold=0.95, colorbar=True)
+            t.add_overlay(dil_tbss_img, cmap=cm.hot, threshold=threshold,
+                colorbar=True)
         except TypeError:
             log.info('probably empty tbss map')
             pass
