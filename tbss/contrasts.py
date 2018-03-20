@@ -106,19 +106,18 @@ def randomise_parallel(in_file, out_basename, design_mat, mask, tcon,
         cmd = cmd + ' &> %s'%tmpfile
         commands.append(cmd)
 
-
     if not email_notify is None:
         notif_commands = []
         for i, e in enumerate(commands):
-            prefix = 'mailx -s "%s %s" < /dev/null "%s"'\
-                    %(contrasts[i][0], '%s', email_notify)
-            cmd = ['%s ; %s ; %s'%(prefix%'started', e, prefix%'ended') \
-                    for e in commands]
+            prefix = 'mailx -s "%s %s %s %s" < /dev/null "%s"'\
+                    %(contrasts[i][0], tcon, e.split('&>')[-1], '%s', email_notify)
+            cmd = '%s ; %s ; %s'%(prefix%'started', e, prefix%'ended')
             notif_commands.append(cmd)
         commands = notif_commands
 
     if not sleep_interval is None and sleep_interval > 0:
         commands = ['sleep %s ; %s'%(str(i*sleep_interval), e) \
                 for i, e in enumerate(commands)]
+
 
     return commands
