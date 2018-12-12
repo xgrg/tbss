@@ -67,8 +67,15 @@ def read(fp):
     con = []
     for name, contrast in zip(names_lines, contrasts_lines):
         con.append((' '.join(name.split(' ')[1:]), contrast.split(' ')))
-
     return con
+
+def to_dataframe(con):
+    ''' Turns a set of contrasts in a DataFrame.'''
+    names = [e[0] for e in con]
+    val = [[float(each) for each in e[1:][0]] for e in con]
+    import pandas as pd
+    df = pd.DataFrame(val, index=names)
+    return df
 
 # Building the `randomise` commands
 def randomise_parallel(in_file, out_basename, design_mat, mask, tcon,
