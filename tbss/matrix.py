@@ -25,5 +25,6 @@ def read(fp):
     lines = [line for line in lines if not line.startswith('/')]
     mat = []
     for line in lines:
-        mat.append(line.split(' '))
+        mat.append([float(e) for e in line.split(' ')])
     return mat
+
