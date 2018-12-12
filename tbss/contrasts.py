@@ -53,6 +53,10 @@ def dump(contrasts, fp):
 
     import math
     chunk_size = math.ceil(len(contrasts)/len(fp))
+    con_size = len(contrasts[0][1])
+    for n,c in contrasts:
+        if len(c) != con_size:
+            raise Exception('Size mismatch in contrasts')
     for i, (each, f) in enumerate(zip(chunks(contrasts, int(chunk_size)), fp)):
         with open(f, 'w') as w:
             w.write(__build_file__(each, mock=int(i*chunk_size)))
