@@ -1,6 +1,6 @@
 # TBSS helper functions
 
-Requires prior basic knowledge about _Tract-Based Spatial Statistics_. Requires [nipype](http://nipype.readthedocs.io).
+Requires prior basic knowledge about _Tract-Based Spatial Statistics_. Requires [nilearn](http://nilearn.github.io) and [nipype](http://nipype.readthedocs.io).
 
 See [this post](http://xgrg.github.io/parallelize-TBSS/) for a few explanations on why and how.
 
