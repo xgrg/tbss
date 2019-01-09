@@ -8,7 +8,7 @@ See [this post](http://xgrg.github.io/parallelize-TBSS/) for a few explanations 
 
 ### Example
 
-The following generates a series of independent commands to split a `.con` contrast file into multiple ones and run `randomise` on them in parallel jobs.
+The following splits a `.con` contrast file into multiple ones and generates a series of independent commands to run `randomise` on the new contrast files in parallel jobs.
 
 ```python
 from tbss import contrasts
