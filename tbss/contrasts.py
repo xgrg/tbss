@@ -52,6 +52,9 @@ def dump(contrasts, fp):
             yield l[i:i + n]
 
     import math
+
+    if isinstance(fp, str):
+        fp = [fp]
     chunk_size = math.ceil(len(contrasts)/len(fp))
     con_size = len(contrasts[0][1])
     for n,c in contrasts:
