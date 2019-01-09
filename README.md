@@ -1,4 +1,4 @@
-# TBSS helper functions
+# Basic helper functions for TBSS
 
 Requires prior basic knowledge about _Tract-Based Spatial Statistics_. Requires [nilearn](http://nilearn.github.io) and [nipype](http://nipype.readthedocs.io).
 
@@ -7,6 +7,8 @@ See [this post](http://xgrg.github.io/parallelize-TBSS/) for a few explanations 
 ## Parallelize TBSS/Randomise
 
 ### Example
+
+The following generates a series of independent commands to split a `.con` contrast file into multiple ones and run `randomise` on them in parallel jobs.
 
 ```python
 from tbss import contrasts
