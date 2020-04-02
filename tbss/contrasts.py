@@ -33,7 +33,7 @@ def dump(contrasts, fp):
         con = ['/NumWaves %s'%len(contrasts[0][1])]
 
         contrasts2 = []
-        for i in xrange(mock):
+        for i in range(0, mock):
             contrasts2.append(('mock%s'%(i+1), [0]*len(contrasts[0][1])))
         contrasts2.extend(contrasts)
 
@@ -96,26 +96,28 @@ def randomise_parallel(in_file, out_basename, design_mat, mask, tcon,
     import os.path as op
     import nipype.interfaces.fsl as fsl
     from nipype import logging
-    import tempfile
-    log = logging.getLogger('workflow')
+    import tempfile, os
+    log = logging.getLogger('nipype.workflow')
 
     contrasts = read(tcon)
-    fp = ['/tmp/%s_part%s.con'%(op.basename(out_basename), str(s)) \
-            for s in xrange(min(n_cpus, len(contrasts)))]
+    fp = [op.join(op.dirname(out_basename), '%s_part%s.con'%(op.basename(out_basename), str(s))) \
+            for s in range(0, min(n_cpus, len(contrasts)))]
 
     log.info('Temporary contrast files: %s'%str(fp))
     dump(contrasts, fp)
 
     commands = []
-    for i in xrange(min(n_cpus, len(contrasts))):
+    for i in range(0, min(n_cpus, len(contrasts))):
         rand = fsl.Randomise(in_file=in_file, mask=mask, tcon=fp[i],
             design_mat=design_mat, demean=demean, num_perm=num_perm,
             raw_stats_imgs=True, tfce2D=True)
 
         skipTo = i+1
-        tmpfile = tempfile.mkstemp(suffix='.log')[1]
+        tmpfile = tempfile.mkstemp(suffix='.log')
+        os.close(tmpfile[0])
+        tmpfile = tmpfile[1]
 
-        cmd = rand.cmdline.replace('-o "tbss_"',
+        cmd = rand.cmdline.replace('-o "randomise"',
                 '-o %s --skipTo=%s -V'%(out_basename, skipTo))
         cmd = cmd + ' &> %s'%tmpfile
         commands.append(cmd)
