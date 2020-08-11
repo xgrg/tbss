@@ -1,10 +1,11 @@
 from matplotlib import pyplot as plt
 plt.rcParams.update({'figure.max_open_warning': 0})
 
+
 def plot_stat_map(img, mean_FA_skeleton, start, end, row_l=6, step=1, title='',
-    axis='z', pngfile=None, threshold=0.95):
-    ''' Inspired from plot_two_maps. Plots a TBSS contrast map over the
-    skeleton of a mean FA map'''
+                  axis='z', pngfile=None, threshold=0.95):
+    """ Inspired from plot_two_maps. Plots a TBSS contrast map over the
+    skeleton of a mean FA map"""
 
     from nilearn import plotting
     from PIL import Image
@@ -25,16 +26,16 @@ def plot_stat_map(img, mean_FA_skeleton, start, end, row_l=6, step=1, title='',
     images = []
 
     for line in range(int(slice_nb/float(row_l) + 1)):
-        opt = {'title':{True:title,
-                        False:None}[line==0],
-               'colorbar':False,
-               'black_bg':True,
-               'display_mode':axis,
-               'threshold':0.2,
+        opt = {'title': {True: title,
+                         False: None}[line == 0],
+               'colorbar': False,
+               'black_bg': True,
+               'display_mode': axis,
+               'threshold': 0.2,
                'cmap': cm.Greens,
-               'cut_coords':range(start + line * row_l * step,
-                                       start + (line+1) * row_l * step,
-                                       step)}
+               'cut_coords': range(start + line * row_l * step,
+                                   start + (line+1) * row_l * step,
+                                   step)}
         method = 'plot_stat_map'
         opt.update({'stat_map_img': mean_FA_skeleton})
 
@@ -43,7 +44,7 @@ def plot_stat_map(img, mean_FA_skeleton, start, end, row_l=6, step=1, title='',
         try:
             # Add overlay
             t.add_overlay(dil_tbss_img, cmap=cm.hot, threshold=threshold,
-                colorbar=True)
+                          colorbar=True)
         except TypeError:
             log.info('probably empty tbss map')
             pass
@@ -63,8 +64,7 @@ def plot_stat_map(img, mean_FA_skeleton, start, end, row_l=6, step=1, title='',
         out.paste(im, box)
 
     if pngfile is None:
-        import tempfile
         pngfile = tempfile.mkstemp(suffix='.png')[1]
-    log.info('Saving to... %s (%s)'%(pngfile, title))
+    log.info('Saving to... %s (%s)' % (pngfile, title))
 
     out.save(pngfile)
