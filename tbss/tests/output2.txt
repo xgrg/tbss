@@ -1,0 +1,21 @@
+Anterior thalamic radiation L:1.6814
+Anterior thalamic radiation R:0.6245
+Corticospinal tract L:0.5552
+Corticospinal tract R:0.3939
+Cingulum (cingulate gyrus) L:0.5249
+Cingulum (cingulate gyrus) R:0.1674
+Cingulum (hippocampus) L:0.0078
+Cingulum (hippocampus) R:0.0053
+Forceps major:0.0404
+Forceps minor:5.2468
+Inferior fronto-occipital fasciculus L:1.7061
+Inferior fronto-occipital fasciculus R:0.8424
+Inferior longitudinal fasciculus L:1.7940
+Inferior longitudinal fasciculus R:0.0034
+Superior longitudinal fasciculus L:1.4276
+Superior longitudinal fasciculus R:0.7890
+Uncinate fasciculus L:0.6704
+Uncinate fasciculus R:0.1896
+Superior longitudinal fasciculus (temporal part) L:0.7660
+Superior longitudinal fasciculus (temporal part) R:0.2045
+

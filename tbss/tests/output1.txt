@@ -1,0 +1,30 @@
+=====[ /tmp/stats/ABratio/ABratio_FA_tfce_corrp_tstat3.nii.gz | JHU White-Matter Tractography Atlas ]=====
+ClusterIndex	Voxels	MAX	MAX X (mm)	MAX Y (mm)	MAX Z (mm)	COG X (mm)	COG Y (mm)	COG Z (mm)
+1	25356	0.988	14	27	16	-7.98	-5.61	16.5
+------------------------------------------
+Structures to which each center of mass belongs to:
+1,-7.98,-5.61,16.5,JHU White-Matter Tractography Atlas,9% Anterior thalamic radiation L
+------------------------------------------
+Structures to which each cluster belongs to:
+
+Cluster #1
+Anterior thalamic radiation L:1.6879
+Anterior thalamic radiation R:0.6167
+Corticospinal tract L:0.5588
+Corticospinal tract R:0.3921
+Cingulum (cingulate gyrus) L:0.5230
+Cingulum (cingulate gyrus) R:0.1671
+Cingulum (hippocampus) L:0.0079
+Cingulum (hippocampus) R:0.0053
+Forceps major:0.0406
+Forceps minor:5.2026
+Inferior fronto-occipital fasciculus L:1.7149
+Inferior fronto-occipital fasciculus R:0.8351
+Inferior longitudinal fasciculus L:1.8074
+Inferior longitudinal fasciculus R:0.0035
+Superior longitudinal fasciculus L:1.4380
+Superior longitudinal fasciculus R:0.7930
+Uncinate fasciculus L:0.6737
+Uncinate fasciculus R:0.1869
+Superior longitudinal fasciculus (temporal part) L:0.7709
+Superior longitudinal fasciculus (temporal part) R:0.2055
