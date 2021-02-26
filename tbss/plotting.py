@@ -68,3 +68,171 @@ def plot_stat_map(img, mean_FA_skeleton, start, end, row_l=6, step=1, title='',
     log.info('Saving to... %s (%s)' % (pngfile, title))
 
     out.save(pngfile)
+
+
+def plot_atlas(img, mean_FA_skeleton, start, end, row_l=6, step=1, title='',
+                  axis='z', pngfile=None):
+    """ Inspired from plot_two_maps. Plots a TBSS contrast map over the
+    skeleton of a mean FA map"""
+
+    from nilearn import plotting
+    from PIL import Image
+    import tempfile
+    import logging as log
+
+    slice_nb = int(abs(((end - start) / float(step))))
+    images = []
+
+    for line in range(int(slice_nb/float(row_l) + 1)):
+        opt = {'roi_img': img,
+               'bg_img': mean_FA_skeleton,
+                'title': {True: title,
+                         False: None}[line == 0],
+               'black_bg': True,
+               'display_mode': axis,
+               'cut_coords': range(start + line * row_l * step,
+                                   start + (line+1) * row_l * step,
+                                   step)}
+        method = 'plot_roi'
+
+        t = getattr(plotting, method).__call__(**opt)
+
+        # Converting to PIL and appending it to the list
+        buf = io.BytesIO()
+        t.savefig(buf)
+        buf.seek(0)
+        im = Image.open(buf)
+        images.append(im)
+
+    # Joining the images
+    imsize = images[0].size
+    out = Image.new('RGBA', size=(imsize[0], len(images)*imsize[1]))
+    for i, im in enumerate(images):
+        box = (0, i * imsize[1], imsize[0], (i+1) * imsize[1])
+        out.paste(im, box)
+
+    if pngfile is None:
+        pngfile = tempfile.mkstemp(suffix='.png')[1]
+    log.info('Saving to... %s (%s)' % (pngfile, title))
+
+    out.save(pngfile)
+
+
+def plot_map(img, start, end, step=1, row_l=6, title='', bg_img=None,
+    threshold=None, axis='z', method='plot_stat_map', overlay=None,
+    pngfile=None, cmap=None):
+    ''' Generates a multiple row plot instead of the very large native plot,
+    given the number of slices on each row, the index of the first/last slice
+    and the increment.
+
+    Method parameter can be plot_stat_map (default) or plot_prob_atlas.'''
+
+    from nilearn import plotting, image
+    import io
+    from PIL import Image
+    img = image.math_img("np.ma.masked_less(img, 0)", img=img)
+
+    slice_nb = int(abs(((end - start) / float(step))))
+    images = []
+    for line in range(int(slice_nb/float(row_l) + 1)):
+        opt = {'title': {True: title,
+                         False: None}[line==0],
+               'colorbar': True,
+               'black_bg': True,
+               'display_mode': axis,
+               'threshold': threshold,
+               'cut_coords': range(start + line * row_l * step,
+                                   start + (line+1) * row_l * step,
+                                   step)}
+        if method == 'plot_prob_atlas':
+            opt.update({'maps_img': img,
+                        'view_type': 'contours'})
+        elif method == 'plot_stat_map':
+            opt.update({'stat_map_img': img})
+        if bg_img is not None:
+            opt.update({'bg_img': bg_img})
+        if cmap is not None:
+            opt.update({'cmap': getattr(cm, cmap)})
+
+        t = getattr(plotting, method).__call__(**opt)
+
+        # Add overlay
+        if overlay is not None:
+            if isinstance(overlay, list):
+                for each in overlay:
+                    t.add_overlay(each)
+            else:
+                t.add_overlay(overlay)
+
+        # Converting to PIL and appending it to the list
+        buf = io.BytesIO()
+        t.savefig(buf)
+        buf.seek(0)
+        im = Image.open(buf)
+        images.append(im)
+
+    # Joining the images
+    imsize = images[0].size
+    out = Image.new('RGBA', size=(imsize[0], len(images)*imsize[1]))
+    for i, im in enumerate(images):
+        box = (0, i * imsize[1], imsize[0], (i+1) * imsize[1])
+        out.paste(im, box)
+
+    if pngfile is None:
+        import tempfile
+        pngfile = tempfile.mkstemp(suffix='.png')[1]
+    print('Saving to... %s'%pngfile)
+
+    out.save(pngfile, dpi=(200, 200))
+    return pngfile
+
+
+def sections_allcontrasts(path, title, contrasts='all', mode='uncorrected',
+    axis='z', cluster_threshold=50, row_l=8, start=-32, end=34, step=2):
+    ''' For each SPM contrast from a Nipype workflow (`path` points to the base
+    directory), generates a figure made of slices from the corresponding
+    thresholded map.
+
+    `mode` can be either 'uncorrected' (p<0.001, T>3.1, F>4.69)
+                      or 'FWE' (p<0.05, T>4.54, F>8.11).
+    `title` is the title displayed on the plot.'''
+
+    import gzip, pickle
+    import os.path as op
+    from glob import glob
+    from nilearn.glm import threshold_stats_img
+
+    nodes = [pickle.load(gzip.open(op.join(path, e, '_node.pklz'), 'rb'))
+        for e in ['modeldesign', 'estimatemodel','estimatecontrasts']]
+    _, _, node = nodes
+
+    def _thiscontrast(i, node=node, cluster_threshold=cluster_threshold, mode=mode,
+            title=title, axis=axis, row_l=row_l, start=start, end=end, step=step):
+        output_dir = op.join(path, node._id)
+        img = glob(op.join(output_dir, 'spm*_00%02d.nii'%i))[0]
+        contrast_type = op.split(img)[-1][3]
+        print([img, contrast_type])
+        contrast_name = node.inputs.contrasts[i-1][0]
+        thresholded_map1 = threshold_stats_img(img, threshold=0.001,
+            cluster_threshold=cluster_threshold)
+        if mode == 'uncorrected':
+            threshold1 = 3.106880 if contrast_type == 'T' else 4.69
+            pval_thresh = 0.001
+        elif mode == 'FWE':
+            threshold1 = 4.5429 if contrast_type == 'T' else 8.1101
+            pval_thresh = 0.05
+
+        pngfile = plot_map(img, threshold=threshold1, row_l=row_l, axis=axis,
+            start=start, end=end, step=step, title= '(%s) %s - %s>%.02f - p<%s (%s)'
+            %(title, contrast_name, contrast_type, threshold1, pval_thresh,
+            mode))
+        return pngfile
+
+    sections = []
+    for i in range(1, len(node.inputs.contrasts)+1):
+        if (isinstance(contrasts, list) and i in list(contrasts))\
+            or (isinstance(contrasts, str) and (contrasts == 'all'\
+            or contrasts in node.inputs.contrasts[i-1][0])):
+                pngfile = _thiscontrast(i)
+                sections.append((node.inputs.contrasts[i-1][0], pngfile))
+    return sections
