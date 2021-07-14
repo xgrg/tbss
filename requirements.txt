@@ -1,0 +1,7 @@
+coverage>=4.5
+coveralls
+pyxnat>=1.4
+pandas
+matplotlib
+nipype
+nilearn

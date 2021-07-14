@@ -1,5 +1,8 @@
 # Basic helper functions for TBSS
 
+[![pipeline status](https://img.shields.io/travis/xgrg/tbss.svg)](https://travis-ci.org/xgrg/tbss)
+[![pipeline Status](https://coveralls.io/repos/github/xgrg/tbss/badge.svg?branch=master)](https://coveralls.io/github/xgrg/tbss?branch=master)
+
 Requires prior basic knowledge about _Tract-Based Spatial Statistics_. Requires [nilearn](http://nilearn.github.io) and [nipype](http://nipype.readthedocs.io).
 
 See [this post](http://xgrg.github.io/parallelize-TBSS/) for a few explanations on why and how.
@@ -12,7 +15,7 @@ The following splits a `.con` contrast file into multiple ones and generates a s
 
 ```python
 from tbss import contrasts
-commands = contrasts.randomise_parallel(in_file = '/path/to/all_FA_skeletonised.nii.gz', 
+commands = contrasts.randomise_parallel(in_file = '/path/to/all_FA_skeletonised.nii.gz',
                out_basename = '/path/to/tbss_FA',
                mask = '/path/to/mean_FA_skeleton_mask.nii.gz',
                tcon = '/path/to/contrasts.con',
@@ -53,15 +56,14 @@ Requires [nilearn](http://nilearn.github.io/).
 ### Example
 ```python
 from tbss import plotting
-plotting.plot_stat_map('/path/to/tbss_tstat1.nii.gz', 
-                       '/path/to/mean_FA_skeleton.nii.gz', 
-                       start=-15, 
-                       end=43, 
-                       row_l=6, 
-                       step=2, 
+plotting.plot_stat_map('/path/to/tbss_tstat1.nii.gz',
+                       '/path/to/mean_FA_skeleton.nii.gz',
+                       start=-15,
+                       end=43,
+                       row_l=6,
+                       step=2,
                        title='Effect of age (-)')
 ```
 
 
 ![TBSS plotting](https://raw.githubusercontent.com/xgrg/tbss/master/doc/plotting.png)
-

@@ -1,4 +1,6 @@
 from matplotlib import pyplot as plt
+from matplotlib import cm
+
 plt.rcParams.update({'figure.max_open_warning': 0})
 
 
@@ -11,7 +13,6 @@ def plot_stat_map(img, mean_FA_skeleton, start, end, row_l=6, step=1, title='',
     from PIL import Image
     import io
     import tempfile
-    from matplotlib import cm
     import logging as log
 
     # Dilate tbss map
@@ -71,9 +72,8 @@ def plot_stat_map(img, mean_FA_skeleton, start, end, row_l=6, step=1, title='',
 
 
 def plot_atlas(img, mean_FA_skeleton, start, end, row_l=6, step=1, title='',
-                  axis='z', pngfile=None):
-    """ Inspired from plot_two_maps. Plots a TBSS contrast map over the
-    skeleton of a mean FA map"""
+               axis='z', pngfile=None):
+    """ Generates a multiple row plot from a ROI image. """
 
     from nilearn import plotting
     from PIL import Image
@@ -86,7 +86,7 @@ def plot_atlas(img, mean_FA_skeleton, start, end, row_l=6, step=1, title='',
     for line in range(int(slice_nb/float(row_l) + 1)):
         opt = {'roi_img': img,
                'bg_img': mean_FA_skeleton,
-                'title': {True: title,
+               'title': {True: title,
                          False: None}[line == 0],
                'black_bg': True,
                'display_mode': axis,
@@ -119,8 +119,8 @@ def plot_atlas(img, mean_FA_skeleton, start, end, row_l=6, step=1, title='',
 
 
 def plot_map(img, start, end, step=1, row_l=6, title='', bg_img=None,
-    threshold=None, axis='z', method='plot_stat_map', overlay=None,
-    pngfile=None, cmap=None):
+             threshold=None, axis='z', method='plot_stat_map', overlay=None,
+             pngfile=None, cmap=None):
     ''' Generates a multiple row plot instead of the very large native plot,
     given the number of slices on each row, the index of the first/last slice
     and the increment.
@@ -136,7 +136,7 @@ def plot_map(img, start, end, step=1, row_l=6, title='', bg_img=None,
     images = []
     for line in range(int(slice_nb/float(row_l) + 1)):
         opt = {'title': {True: title,
-                         False: None}[line==0],
+                         False: None}[line == 0],
                'colorbar': True,
                'black_bg': True,
                'display_mode': axis,
@@ -181,14 +181,14 @@ def plot_map(img, start, end, step=1, row_l=6, title='', bg_img=None,
     if pngfile is None:
         import tempfile
         pngfile = tempfile.mkstemp(suffix='.png')[1]
-    print('Saving to... %s'%pngfile)
+    print('Saving to... %s' % pngfile)
 
     out.save(pngfile, dpi=(200, 200))
     return pngfile
 
 
 def sections_allcontrasts(path, title, contrasts='all', mode='uncorrected',
-    axis='z', cluster_threshold=50, row_l=8, start=-32, end=34, step=2):
+                          axis='z', row_l=8, start=-32, end=34, step=2):
     ''' For each SPM contrast from a Nipype workflow (`path` points to the base
     directory), generates a figure made of slices from the corresponding
     thresholded map.
@@ -200,39 +200,43 @@ def sections_allcontrasts(path, title, contrasts='all', mode='uncorrected',
     import gzip, pickle
     import os.path as op
     from glob import glob
-    from nilearn.glm import threshold_stats_img
 
     nodes = [pickle.load(gzip.open(op.join(path, e, '_node.pklz'), 'rb'))
-        for e in ['modeldesign', 'estimatemodel','estimatecontrasts']]
+             for e in ['modeldesign', 'estimatemodel', 'estimatecontrasts']]
     _, _, node = nodes
 
-    def _thiscontrast(i, node=node, cluster_threshold=cluster_threshold, mode=mode,
-            title=title, axis=axis, row_l=row_l, start=start, end=end, step=step):
+    def _thiscontrast(i, node=node, mode=mode, title=title, axis=axis,
+                      row_l=row_l, start=start, end=end, step=step):
         output_dir = op.join(path, node._id)
         img = glob(op.join(output_dir, 'spm*_00%02d.nii'%i))[0]
         contrast_type = op.split(img)[-1][3]
         print([img, contrast_type])
         contrast_name = node.inputs.contrasts[i-1][0]
-        thresholded_map1 = threshold_stats_img(img, threshold=0.001,
-            cluster_threshold=cluster_threshold)
+        # from nilearn.glm import threshold_stats_img
+        # thresholded_map1 = threshold_stats_img(img, threshold=0.001,
+        #     cluster_threshold=cluster_threshold)
         if mode == 'uncorrected':
             threshold1 = 3.106880 if contrast_type == 'T' else 4.69
             pval_thresh = 0.001
+            #threshold1 = 2.59 if contrast_type == 'T' else 4.69
+            #pval_thresh = 0.005
         elif mode == 'FWE':
             threshold1 = 4.5429 if contrast_type == 'T' else 8.1101
             pval_thresh = 0.05
-
-        pngfile = plot_map(img, threshold=threshold1, row_l=row_l, axis=axis,
-            start=start, end=end, step=step, title= '(%s) %s - %s>%.02f - p<%s (%s)'
-            %(title, contrast_name, contrast_type, threshold1, pval_thresh,
-            mode))
-        return pngfile
+        params = (title, contrast_name, contrast_type, threshold1, pval_thresh,
+                  mode)
+        title = '(%s) %s - %s>%.02f - p<%s (%s)' % params
+        p = plot_map(img, threshold=threshold1, row_l=row_l, axis=axis,
+                     start=start, end=end, step=step, title=title)
+        return p
 
     sections = []
     for i in range(1, len(node.inputs.contrasts)+1):
-        if (isinstance(contrasts, list) and i in list(contrasts))\
-            or (isinstance(contrasts, str) and (contrasts == 'all'\
-            or contrasts in node.inputs.contrasts[i-1][0])):
-                pngfile = _thiscontrast(i)
-                sections.append((node.inputs.contrasts[i-1][0], pngfile))
+        cname = node.inputs.contrasts[i-1][0]
+        is_in_contrasts = isinstance(contrasts, list) and i in contrasts
+        is_a_contrast = isinstance(contrasts, str) and (contrasts == 'all'
+                                                        or contrasts in cname)
+        if is_in_contrasts or is_a_contrast:
+            pngfile = _thiscontrast(i)
+            sections.append((cname, pngfile))
     return sections

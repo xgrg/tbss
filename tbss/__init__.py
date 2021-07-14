@@ -1,6 +1,7 @@
 import os
 import os.path as op
-is_running_ci_tests = os.environ.get('CI_TEST', 0) == 1
+is_running_ci_tests = os.environ.get('CI_TEST', None) is not None
+
 if is_running_ci_tests:
     print('CI_TEST')
 
